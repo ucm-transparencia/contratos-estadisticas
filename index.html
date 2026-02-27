@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datos Estadísticos de Contratos 2024 — UCM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --rojo:      #b71234;
+  --rojo-dark: #8b0d27;
+  --rojo-lite: #f5e6ea;
+  --rojo-pale: #fef7f8;
+  --gris:      #1a1a2e;
+  --gris-m:    #64748b;
+  --gris-c:    #f1f5f9;
+  --borde:     #e2e8f0;
+  --blanco:    #ffffff;
+  --fn:        'IBM Plex Sans', system-ui, sans-serif;
+  --fm:        'IBM Plex Mono', monospace;
+  --tr:        .2s cubic-bezier(.4,0,.2,1);
+  --sh:        0 4px 24px rgba(0,0,0,.08);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--fn);background:#f0f2f5;color:var(--gris);min-height:100vh;padding:16px;line-height:1.5;font-size:14px}
+.container{max-width:1200px;margin:0 auto;background:var(--blanco);border-radius:12px;box-shadow:var(--sh);overflow:hidden}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--rojo) 0%,var(--rojo-dark) 100%);color:var(--blanco);padding:14px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.header-icon{width:38px;height:38px;background:rgba(255,255,255,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.header h1{font-size:15px;font-weight:600;line-height:1.3}
+.header h1 span{display:block;font-size:11px;font-weight:400;opacity:.7;margin-top:2px}
+
+/* YEAR BADGE BAR */
+.badge-bar{padding:10px 28px;background:var(--blanco);border-bottom:2px solid var(--borde);display:flex;align-items:center;gap:10px}
+.year-badge{background:var(--rojo-lite);color:var(--rojo-dark);font-weight:700;font-size:13px;padding:5px 14px;border-radius:6px;border:1.5px solid #f5c6d0}
+.badge-bar-sub{font-size:11px;color:var(--gris-m)}
+
+/* MAIN */
+.main{padding:24px 28px 40px}
+
+/* SECTION */
+.sec-hdr{margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--rojo-lite);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec-hdr h2{font-size:14px;font-weight:700;color:var(--rojo-dark)}
+.sec-hdr p{font-size:11px;color:var(--gris-m);font-style:italic}
+
+.section{margin-bottom:40px}
+
+/* CHART GRID */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.chart-grid{grid-template-columns:1fr}}
+
+/* CHART CARD */
+.chart-card{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;transition:box-shadow var(--tr)}
+.chart-card:hover{box-shadow:0 6px 24px rgba(183,18,52,.1)}
+.chart-title{font-size:13px;font-weight:700;color:var(--gris);text-align:center;line-height:1.3}
+.chart-wrap{position:relative;width:100%}
+.chart-wrap.pie-wrap{height:280px}
+.chart-wrap.bar-wrap{height:280px}
+
+/* SUMMARY PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.pill-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* FOOTER */
+.footer{background:var(--gris-c);border-top:1px solid var(--borde);padding:14px 28px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.footer-text{font-size:11px;color:var(--gris-m);line-height:1.6}
+.footer-text a{color:var(--rojo-dark);text-decoration:underline;text-decoration-color:rgba(183,18,52,.3)}
+.footer-text a:hover{text-decoration-color:var(--rojo)}
+
+/* DIVIDER */
+.divider{border:none;border-top:1.5px solid var(--borde);margin:32px 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-icon">📈</div>
+    <h1>Datos estadísticos de contratos adjudicados
+      <span>Universidad Complutense de Madrid · Ejercicio 2024</span>
+    </h1>
+  </div>
+
+  <div class="badge-bar">
+    <span class="year-badge">Ejercicio 2024</span>
+    <span class="badge-bar-sub">Gráficos interactivos · Pase el cursor para ver detalles</span>
+  </div>
+
+  <div class="main">
+
+    <!-- SECCIÓN NÚMERO DE CONTRATOS -->
+    <div class="section">
+      <div class="sec-hdr">
+        <h2>Número de contratos formalizados</h2>
+        <p>Total: 6.977 contratos adjudicados en 2024</p>
+      </div>
+      <div class="chart-grid">
+
+        <!-- Tarta: Nº por procedimiento -->
+        <div class="chart-card">
+          <div class="chart-title">Nº de contratos formalizados por tipo de procedimiento</div>
+          <div class="chart-wrap pie-wrap">
+            <canvas id="chartNProcedimiento"></canvas>
+          </div>
+          <div class="pills" id="pillsNProc"></div>
+        </div>
+
+        <!-- Barras: Nº por tipo contrato -->
+        <div class="chart-card">
+          <div class="chart-title">Nº de contratos formalizados por tipo de contrato</div>
+          <div class="chart-wrap bar-wrap">
+            <canvas id="chartNTipo"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECCIÓN IMPORTE -->
+    <div class="section">
+      <div class="sec-hdr">
+        <h2>Contratos formalizados por importe</h2>
+        <p>Total: 76.089.060,49 € (IVA excluido)</p>
+      </div>
+      <div class="chart-grid">
+
+        <!-- Tarta: Importe por procedimiento -->
+        <div class="chart-card">
+          <div class="chart-title">Contratos formalizados por tipo de procedimiento e importe</div>
+          <div class="chart-wrap pie-wrap">
+            <canvas id="chartIProcedimiento"></canvas>
+          </div>
+          <div class="pills" id="pillsIProc"></div>
+        </div>
+
+        <!-- Barras: Importe por tipo contrato -->
+        <div class="chart-card">
+          <div class="chart-title">Contratos formalizados por tipo de contrato e importe</div>
+          <div class="chart-wrap bar-wrap">
+            <canvas id="chartITipo"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;color:var(--gris-m)"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <p class="footer-text">
+      Información facilitada por la
+      <a href="https://www.ucm.es/directorio/?eid=1003" target="_blank" rel="noopener">Dirección de la Contratación Administrativa</a>
+      · Universidad Complutense de Madrid
+    </p>
+  </div>
+
+</div>
+
+<script>
+// ── Palettes ───────────────────────────────────────────────────
+const BLUE_PALETTE  = ['#1e3a5f','#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe'];
+const GREEN_PALETTE = ['#166534','#15803d','#16a34a','#22c55e','#86efac','#dcfce7'];
+
+// Shared tooltip style
+Chart.defaults.font.family = "'IBM Plex Sans', system-ui, sans-serif";
+Chart.defaults.font.size = 11;
+
+function fmtN(v)  { return v.toLocaleString('es-ES'); }
+function fmtEur(v){ return v.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
+
+const tooltipPlugin = {
+  backgroundColor: 'rgba(26,26,46,.92)',
+  titleColor: '#fff',
+  bodyColor: '#cbd5e1',
+  borderColor: 'rgba(255,255,255,.1)',
+  borderWidth: 1,
+  padding: 10,
+  cornerRadius: 8,
+  titleFont: {weight:'700', size:12},
+  bodyFont: {size:11},
+  displayColors: true,
+  boxWidth: 10, boxHeight: 10, boxPadding: 4,
+};
+
+// ── 1. Nº por PROCEDIMIENTO (pie) ──────────────────────────────
+const nProcLabels = [
+  'Procedimientos abiertos',
+  'Procedimientos abiertos simplificados',
+  'Proc. abiertos simplificado abreviado',
+  'Basados en Acuerdo Marco',
+  'Procedimientos negociados',
+  'Adjudicación Directa',
+];
+const nProcVals = [31, 26, 15, 6231, 18, 656];
+const nProcColors = ['#e63946','#f4a261','#f1d00a','#1e3a5f','#2563eb','#60a5fa'];
+
+new Chart(document.getElementById('chartNProcedimiento'), {
+  type: 'pie',
+  data: {
+    labels: nProcLabels,
+    datasets: [{
+      data: nProcVals,
+      backgroundColor: nProcColors,
+      borderColor: '#fff',
+      borderWidth: 2,
+      hoverOffset: 12,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: {
+          label: ctx => `  ${fmtN(ctx.parsed)} contratos  (${(ctx.parsed/nProcVals.reduce((a,b)=>a+b,0)*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+
+// Pills for pie 1
+const pillsNProc = document.getElementById('pillsNProc');
+nProcLabels.forEach((l,i) => {
+  const p = document.createElement('span');
+  p.className = 'pill';
+  p.style.background = nProcColors[i]+'22';
+  p.style.color = nProcColors[i];
+  p.innerHTML = `<span class="pill-dot" style="background:${nProcColors[i]}"></span>${l}: <b>${fmtN(nProcVals[i])}</b>`;
+  pillsNProc.appendChild(p);
+});
+
+// ── 2. Nº por TIPO (bar) ──────────────────────────────────────
+const nTipoLabels = ['Obras','Suministros','Servicios','Privados'];
+const nTipoVals   = [111, 6268, 598, 0];
+const nTipoColors = ['#1e3a5f','#f87171','#b91c1c','#93c5fd'];
+
+new Chart(document.getElementById('chartNTipo'), {
+  type: 'bar',
+  data: {
+    labels: nTipoLabels,
+    datasets: [{
+      data: nTipoVals,
+      backgroundColor: nTipoColors,
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: {
+          label: ctx => `  ${fmtN(ctx.parsed.y)} contratos`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { weight: '600' } } },
+      y: {
+        grid: { color: '#e2e8f0' },
+        ticks: { callback: v => fmtN(v) }
+      }
+    }
+  },
+  plugins: [{
+    id: 'dataLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((ds, di) => {
+        chart.getDatasetMeta(di).data.forEach((bar, idx) => {
+          const v = ds.data[idx];
+          if (!v) return;
+          ctx.save();
+          ctx.fillStyle = '#1a1a2e';
+          ctx.font = '600 11px "IBM Plex Sans"';
+          ctx.textAlign = 'center';
+          ctx.fillText(fmtN(v), bar.x, bar.y - 6);
+          ctx.restore();
+        });
+      });
+    }
+  }]
+});
+
+// ── 3. Importe por PROCEDIMIENTO (pie) ────────────────────────
+const iProcLabels = [
+  'Procedimientos abiertos',
+  'Procedimientos abiertos simplificados',
+  'Proc. abiertos simplificado abreviado',
+  'Basados en Acuerdo Marco',
+  'Procedimientos negociados',
+  'Adjudicación directa',
+];
+const iProcVals = [47368716.95, 4042099.82, 347176.47, 16272267.80, 3913574.43, 4145225.02];
+const iProcColors = ['#166534','#16a34a','#4ade80','#d97706','#f59e0b','#ef4444'];
+
+new Chart(document.getElementById('chartIProcedimiento'), {
+  type: 'pie',
+  data: {
+    labels: iProcLabels,
+    datasets: [{
+      data: iProcVals,
+      backgroundColor: iProcColors,
+      borderColor: '#fff',
+      borderWidth: 2,
+      hoverOffset: 12,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: {
+          label: ctx => `  ${fmtEur(ctx.parsed)}  (${(ctx.parsed/iProcVals.reduce((a,b)=>a+b,0)*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+
+// Pills for pie 3
+const pillsIProc = document.getElementById('pillsIProc');
+iProcLabels.forEach((l,i) => {
+  const p = document.createElement('span');
+  p.className = 'pill';
+  p.style.background = iProcColors[i]+'22';
+  p.style.color = iProcColors[i];
+  p.innerHTML = `<span class="pill-dot" style="background:${iProcColors[i]}"></span>${l}: <b>${fmtEur(iProcVals[i])}</b>`;
+  pillsIProc.appendChild(p);
+});
+
+// ── 4. Importe por TIPO (bar) ─────────────────────────────────
+const iTipoLabels = ['De obras','De suministros','De servicios','Privados'];
+const iTipoVals   = [6424302.00, 18635539.70, 51029218.79, 0];
+const iTipoColors = ['#1e3a5f','#f97316','#166534','#f1d00a'];
+
+new Chart(document.getElementById('chartITipo'), {
+  type: 'bar',
+  data: {
+    labels: iTipoLabels,
+    datasets: [{
+      data: iTipoVals,
+      backgroundColor: iTipoColors,
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        ...tooltipPlugin,
+        callbacks: {
+          label: ctx => `  ${fmtEur(ctx.parsed.y)}`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { weight: '600' } } },
+      y: {
+        grid: { color: '#e2e8f0' },
+        ticks: { callback: v => (v/1e6).toFixed(0) + ' M€' }
+      }
+    }
+  },
+  plugins: [{
+    id: 'dataLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((ds, di) => {
+        chart.getDatasetMeta(di).data.forEach((bar, idx) => {
+          const v = ds.data[idx];
+          if (!v) return;
+          ctx.save();
+          ctx.fillStyle = '#1a1a2e';
+          ctx.font = '600 10px "IBM Plex Sans"';
+          ctx.textAlign = 'center';
+          ctx.fillText(fmtEur(v), bar.x, bar.y - 6);
+          ctx.restore();
+        });
+      });
+    }
+  }]
+});
+</script>
+</body>
+</html>
